@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model Invoice {
+  id                  String   @id @default(uuid())
+  clientName          String
+  clientNumber        String
+  installationNumber  String
+  referenceMonth      String
+  electricityQuantity Float
+  electricityTotal    Float
+  energySceeeQuantity Float
+  energySceeeTotal    Float
+  economyGDIQuantity  Float
+  economyGDITotal     Float
+  publicLighting      Float
+  totalCost           Float
+  invoiceDueDate      DateTime
+  paymentCode         String
+  totalConsumption    Float
+  totalWithoutGD      Float
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("invoices")
+}
