@@ -5,7 +5,7 @@ const pdfExtract = new PDFExtract()
 
 export const extractDataFromPdf = async (
   pdfBuffer: Buffer
-): Promise<Invoice> => {
+): Promise<any> => {
   try {
     const data: PDFExtractResult = await pdfExtract.extractBuffer(pdfBuffer)
     const text = data.pages
@@ -56,10 +56,10 @@ export const extractDataFromPdf = async (
       totalWithoutGD,
     }
 
-    return extractedData
+    return {success: true, data: extractedData, message:  'The data in the PDF has been extracted'}
   } catch (error) {
     console.error('Error parsing PDF:', error)
-    throw error
+    return {success: false, message: 'Error parsing PDF'}
   }
 }
 

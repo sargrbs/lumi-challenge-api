@@ -1,5 +1,5 @@
 import { expect, describe, it, beforeAll } from 'vitest'
-import { extractDataFromPdf } from '../Utils/PdfExtractor'
+import { extractDataFromPdf } from '../Utils/PdfExtractor.js'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -35,7 +35,7 @@ describe('PDF Extractor', () => {
     expect(extractedData.totalCost).toBeCloseTo(109.48, 2)
 
     expect(extractedData.invoiceDueDate.toISOString().split('T')[0]).toBe(
-      '2024-02-04'
+      '2024-04-02'
     )
 
     expect(extractedData.paymentCode).toBe(

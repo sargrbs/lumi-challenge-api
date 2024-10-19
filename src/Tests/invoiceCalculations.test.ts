@@ -1,5 +1,5 @@
 import { expect, describe, it } from 'vitest'
-import { sumTotalConsumption, sumTotalWithoutGD } from '../Utils/PdfExtractor'
+import { sumTotalConsumption, sumTotalWithoutGD } from '../Utils/PdfExtractor.js'
 
 describe('Invoice Calculations', () => {
   it('should correctly calculate values', () => {

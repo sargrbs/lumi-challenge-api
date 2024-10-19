@@ -1,10 +1,11 @@
 import { saveInvoice } from '../Repository/InvoiceRepository.js'
 import { expect, test, vi } from 'vitest'
 import prisma from './libs/__mocks__/prisma.js'
+import { Invoice } from '../Models/InvoiceModel.js'
 vi.mock('./libs/prisma')
 
 test('create invoice', async () => {
-  const newInvoice = {
+  const newInvoice: Invoice = {
     clientName: 'JOSE MESALY FONSECA DE CARVALHO',
     clientNumber: '7204076116',
     installationNumber: '3001116735',

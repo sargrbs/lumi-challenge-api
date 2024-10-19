@@ -1,20 +1,9 @@
 import * as pdfExtractorService from '../Utils/PdfExtractor.js'
 import * as invoiceRepository from '../Repository/InvoiceRepository.js'
-import {
-  parse,
-  addMonths,
-  format,
-  setHours,
-  setMinutes,
-  setSeconds,
-  setMilliseconds,
-  endOfMonth,
-} from 'date-fns'
+import { parse, addMonths, format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+import { Invoice } from '../Models/InvoiceModel.js'
 
-interface PaginationParams {
-  page?: number
-  perPage?: number
-}
 interface FilterCriteria {
   clientNumber?: string
   startDate?: string
@@ -22,7 +11,14 @@ interface FilterCriteria {
 }
 
 export const createInvoiceData = async (pdfBuffer: Buffer) => {
-  const extractedData = await pdfExtractorService.extractDataFromPdf(pdfBuffer)
+  const result = await pdfExtractorService.extractDataFromPdf(pdfBuffer)
+
+  if(!result.success){
+    return { message: result.message, code: 400 }
+  }
+
+  const extractedData = result.data
+
   const criteria = {
     clientNumber: extractedData.clientNumber,
     installationNumber: extractedData.installationNumber,
@@ -32,12 +28,12 @@ export const createInvoiceData = async (pdfBuffer: Buffer) => {
   const checkInvoice = await invoiceRepository.findBy(criteria)
 
   if (checkInvoice.length > 0) {
-    return checkInvoice[0]
+    return { message: 'Invoice already imported', data: checkInvoice[0], code: 200 }
   }
 
   const invoice = invoiceRepository.saveInvoice(extractedData)
 
-  return invoice
+  return { message: 'The invoice was imported successfully', data: invoice, code: 201 }
 }
 
 export const getAllInvoices = async () => {
@@ -59,18 +55,23 @@ export const getInvoicesByFilter = async (criteria: FilterCriteria) => {
   return await invoiceRepository.findByFilter(criteriaData)
 }
 
-export const getByClient = async (clientNumber: string) => {
-  const criteria = {
-    clientNumber: clientNumber,
-  }
-  return await invoiceRepository.getByPage(criteria)
-}
-
 export const getByPage = async (
-  criteria: string,
-  { page, perPage }: PaginationParams = {}
+  page: string,
+  clientNumber: any,
+  referenceMonth: any
 ) => {
-  return await invoiceRepository.getByPage(criteria, { page, perPage })
+  const pageNumber = parseInt(page)
+
+  const criteria: any = {}
+
+  if (clientNumber != undefined && clientNumber != 'false') {
+    criteria.clientNumber = clientNumber
+  }
+  if (referenceMonth != undefined && referenceMonth !== 'false') {
+    criteria.referenceMonth = formatReferenceMonth(referenceMonth)
+  }
+
+  return await invoiceRepository.getByPage(criteria, pageNumber)
 }
 
 export const deleteInvoice = async (id: string) => {
@@ -89,4 +90,11 @@ function endDateAdjust(date: string): Date {
   let adjustedDate = addMonths(parsedDate, 1)
 
   return adjustedDate
+}
+
+const formatReferenceMonth = (dateString: string) => {
+  if (dateString === 'false') return dateString
+
+  const date = parse(dateString, 'yyyy-MM', new Date())
+  return format(date, 'MMM/yyyy', { locale: ptBR }).toUpperCase()
 }

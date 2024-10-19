@@ -63,6 +63,7 @@ export const findByFilter = async (criteriaData: FilterCriteria) => {
 
   const invoices = await prisma.invoice.findMany({
     where,
+    take: 24,
     orderBy: {
       invoiceDueDate: 'asc',
     },
@@ -73,20 +74,45 @@ export const findByFilter = async (criteriaData: FilterCriteria) => {
 
 export const getByPage = async (
   criteria: any,
-  { page = 1, perPage = 20 }: PaginationParams = {}
+  page = 1,
+  perPage = 12
 ): Promise<PaginatedResult<any>> => {
   const skip = (page - 1) * perPage
 
+  let where: any = {}
+
+  if (criteria.clientNumber && criteria.referenceMonth) {
+    where = {
+      AND: [
+        { clientNumber: criteria.clientNumber },
+        { referenceMonth: criteria.referenceMonth },
+      ],
+    }
+  } else {
+    if (criteria.clientNumber) {
+      where.clientNumber = criteria.clientNumber
+    }
+    if (criteria.referenceMonth) {
+      where.referenceMonth = criteria.referenceMonth
+    }
+  }
+
+  Object.entries(criteria).forEach(([key, value]) => {
+    if (key !== 'clientNumber' && key !== 'referenceMonth') {
+      where[key] = value
+    }
+  })
+
   const [invoices, total] = await Promise.all([
     prisma.invoice.findMany({
-      where: criteria,
+      where,
       skip,
       take: perPage,
       orderBy: {
-        referenceMonth: 'desc',
+        invoiceDueDate: 'desc',
       },
     }),
-    prisma.invoice.count({ where: criteria }),
+    prisma.invoice.count({ where }),
   ])
 
   const totalPages = Math.ceil(total / perPage)

@@ -4,9 +4,9 @@ import invoiceRoutes from './Routes/InvoiceRoutes.js'
 import { errorHandler } from './Middlewares/ErrorHandler.js'
 import cors from 'cors'
 
-dotenv.config()
 const app = express()
-const reactAppOrigin = process.env.REACT_APP || 'http://localhost:5173'
+
+const reactAppOrigin = process.env.REACT_APP_ORIGIN
 
 app.use((req, res, next) => {
   next()

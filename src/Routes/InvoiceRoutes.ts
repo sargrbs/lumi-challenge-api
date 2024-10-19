@@ -13,8 +13,10 @@ router.post(
 router.post('/filter', InvoiceController.getInvoicesByFilter)
 
 router.get('/', InvoiceController.getAllInvoices)
-router.get('/client/:clientNumber', InvoiceController.getInvoiceByClient)
-router.get('/page/:page', InvoiceController.getInvoicesPagination)
+router.get(
+  '/page/:page/:clientNumber?/:referenceMonth?',
+  InvoiceController.getInvoicesPagination
+)
 
 router.delete('/delete/:id', InvoiceController.deleteInvoice)
 
