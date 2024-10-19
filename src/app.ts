@@ -1,11 +1,30 @@
-import express from 'express';
-import invoiceRoutes from './Routes/InvoiceRoutes.js';
-import { errorHandler } from './Middlewares/ErrorHandler.js';
+import dotenv from 'dotenv'
+import express from 'express'
+import invoiceRoutes from './Routes/InvoiceRoutes.js'
+import { errorHandler } from './Middlewares/ErrorHandler.js'
+import cors from 'cors'
 
-const app = express();
+dotenv.config()
+const app = express()
+const reactAppOrigin = process.env.REACT_APP || 'http://localhost:5173'
 
-app.use(express.json());
-app.use('/api/invoices', invoiceRoutes);
-app.use(errorHandler);
+app.use((req, res, next) => {
+  next()
+})
 
-export default app;
+app.use(
+  cors({
+    origin: reactAppOrigin,
+    methods: ['GET', 'POST', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  })
+)
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
+app.use('/api/invoices', invoiceRoutes)
+
+app.use(errorHandler)
+
+export default app

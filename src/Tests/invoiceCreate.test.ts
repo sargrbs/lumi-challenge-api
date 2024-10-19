@@ -1,4 +1,4 @@
-import { saveInvoice } from '../Repository/InvoiceRepository.js';
+import { saveInvoice } from '../Repository/InvoiceRepository.js'
 import { expect, test, vi } from 'vitest'
 import prisma from './libs/__mocks__/prisma.js'
 vi.mock('./libs/prisma')
@@ -21,11 +21,11 @@ test('create invoice', async () => {
     paymentCode: '83660000001-909480138009-161131014433-608110755504-7',
     totalConsumption: 554,
     totalWithoutGD: 355.09,
-  };
+  }
   prisma.invoice.create.mockResolvedValue({ ...newInvoice })
 
   const invoice = await saveInvoice(newInvoice)
-  const { id, createdAt, updatedAt, ...invoiceWithoutIdAndDates } = invoice;
+  const { id, createdAt, updatedAt, ...invoiceWithoutIdAndDates } = invoice
 
-  expect(invoiceWithoutIdAndDates).toEqual(newInvoice);
+  expect(invoiceWithoutIdAndDates).toEqual(newInvoice)
 })

@@ -1,6 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express'
 
-export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction): void => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Ocorreu um erro interno no servidor.' });
-};
+export const errorHandler = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  console.error(err.stack)
+  res.status(500).json({ message: 'Ocorreu um erro interno no servidor.' })
+}

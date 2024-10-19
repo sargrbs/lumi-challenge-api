@@ -1,13 +1,21 @@
-import { Router } from 'express';
-import multer from 'multer';
-import * as InvoiceController from '../Controllers/InvoiceController.js';
+import { Router } from 'express'
+import multer from 'multer'
+import * as InvoiceController from '../Controllers/InvoiceController.js'
+import upload from '../Middlewares/MulterConfig.js'
 
-const router = Router();
-const upload = multer({ storage: multer.memoryStorage() });
+const router = Router()
 
+router.post(
+  '/upload',
+  upload.single('invoice'),
+  InvoiceController.uploadInvoice
+)
+router.post('/filter', InvoiceController.getInvoicesByFilter)
 
-router.post('/upload', upload.single('invoice'), InvoiceController.uploadInvoice);
-router.get('/', InvoiceController.getAllInvoices);
-router.get('/client/:clientNumber', InvoiceController.getInvoiceByClient);
+router.get('/', InvoiceController.getAllInvoices)
+router.get('/client/:clientNumber', InvoiceController.getInvoiceByClient)
+router.get('/page/:page', InvoiceController.getInvoicesPagination)
 
-export default router;
+router.delete('/delete/:id', InvoiceController.deleteInvoice)
+
+export default router
