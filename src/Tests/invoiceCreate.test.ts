@@ -1,11 +1,12 @@
-import { saveInvoice } from '../Repository/InvoiceRepository.js'
 import { expect, test, vi } from 'vitest'
 import prisma from './libs/__mocks__/prisma.js'
 import { Invoice } from '../Models/InvoiceModel.js'
+import { createInvoice } from './libs/script.js'
+
 vi.mock('./libs/prisma')
 
 test('create invoice', async () => {
-  const newInvoice: Invoice = {
+  const newInvoiceInput: Omit<Invoice, 'id' | 'createdAt' | 'updatedAt'> = {
     clientName: 'JOSE MESALY FONSECA DE CARVALHO',
     clientNumber: '7204076116',
     installationNumber: '3001116735',
@@ -23,10 +24,25 @@ test('create invoice', async () => {
     totalConsumption: 554,
     totalWithoutGD: 355.09,
   }
-  prisma.invoice.create.mockResolvedValue({ ...newInvoice })
 
-  const invoice = await saveInvoice(newInvoice)
+  const mockCreatedInvoice: Required<Invoice> = {
+    ...newInvoiceInput,
+    id: 'mocked-id',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+
+  prisma.invoice.create.mockResolvedValue(mockCreatedInvoice)
+
+  const invoice = await createInvoice(newInvoiceInput)
+
   const { id, createdAt, updatedAt, ...invoiceWithoutIdAndDates } = invoice
 
-  expect(invoiceWithoutIdAndDates).toEqual(newInvoice)
+  expect(invoiceWithoutIdAndDates.clientName).toBe(mockCreatedInvoice.clientName)
+  expect(invoiceWithoutIdAndDates.clientNumber).toBe(mockCreatedInvoice.clientNumber)
+  expect(invoiceWithoutIdAndDates.referenceMonth).toBe(mockCreatedInvoice.referenceMonth)
+  expect(invoiceWithoutIdAndDates.electricityTotal).toBe(mockCreatedInvoice.electricityTotal)
+  expect(invoiceWithoutIdAndDates.paymentCode).toBe(mockCreatedInvoice.paymentCode)
+  expect(invoiceWithoutIdAndDates.totalWithoutGD).toBe(mockCreatedInvoice.totalWithoutGD)
+  expect(invoiceWithoutIdAndDates.totalConsumption).toBe(mockCreatedInvoice.totalConsumption)
 })

@@ -19,7 +19,9 @@ describe('PDF Extractor', () => {
   it('should correctly extract data from a PDF', async () => {
     const pdfBuffer = fs.readFileSync(pdfPath)
 
-    const extractedData = await extractDataFromPdf(pdfBuffer)
+    const result = await extractDataFromPdf(pdfBuffer)
+
+    const extractedData = result.data
 
     expect(extractedData.clientName).toBe('JOSE MESALY FONSECA DE CARVALHO')
     expect(extractedData.clientNumber).toBe('7204076116')
