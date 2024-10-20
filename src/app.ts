@@ -8,9 +8,6 @@ const app = express()
 
 const reactAppOrigin = process.env.REACT_APP_ORIGIN
 
-app.use((req, res, next) => {
-  next()
-})
 
 app.use(
   cors({
@@ -27,4 +24,5 @@ app.use('/api/invoices', invoiceRoutes)
 
 app.use(errorHandler)
 
+console.log("CORS origin:", process.env.REACT_APP_ORIGIN);
 export default app
